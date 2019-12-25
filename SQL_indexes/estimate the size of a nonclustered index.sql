@@ -1,8 +1,8 @@
 /*
-estimate the size of a nonclustered index v.3.0
+estimate the size of a nonclustered index v.3.1
 https://docs.microsoft.com/en-us/sql/relational-databases/databases/estimate-the-size-of-a-nonclustered-index?view=sql-server-2016
 Valmar Moritz
-Dec 23rd, 2019
+Dec 25th, 2019
 */
 
 SET NOCOUNT ON
@@ -174,7 +174,7 @@ SELECT @variableLengthStorageFullnessOfKeyColumns AS variableLengthStorageFullne
 
 /* Step 1. Calculate Variables for Use in Steps 2 and 3 */
 DECLARE @Num_Rows int
-DECLARE @sql nvarchar(max) = 'SELECT @Num_Rows = COUNT(*) FROM ' + @tableToIndex
+DECLARE @sql nvarchar(max) = 'SELECT @Num_Rows = SUM(st.row_count) FROM sys.dm_db_partition_stats st WHERE object_name(object_id) =  ''' + @tableToIndex + ''' AND index_id < 2'
 EXECUTE sp_executesql @sql, N'@Num_Rows int OUTPUT', @Num_Rows = @Num_Rows OUTPUT
 
 DECLARE @Num_Key_Cols int = (SELECT COUNT(keyColumn) FROM @columnsToIndex)
