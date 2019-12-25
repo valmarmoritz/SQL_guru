@@ -12,16 +12,16 @@ GO
 
 /* MANUAL INPUTS */
 
-USE [vault]    -- database name
+USE [sobralaen]    -- database name
 
 DECLARE @schema varchar(128) = 'dbo'     -- schema name
-DECLARE @table  varchar(128) = 'RequestLogBL'     -- table name
+DECLARE @table  varchar(128) = 'Transfer'     -- table name
 
-DECLARE @indexName varchar(128) = 'IX_RequestLogBL_HASHBit'     -- name of the index if already existing
+DECLARE @indexName varchar(128) = ''     -- name of the index if already existing
 
-DECLARE @keyCol1   varchar(128) = 'HASHBit'     -- columns in index key
-DECLARE @keyCol2   varchar(128) = ''
-DECLARE @keyCol3   varchar(128) = ''
+DECLARE @keyCol1   varchar(128) = 'description'     -- columns in index key
+DECLARE @keyCol2   varchar(128) = 'transfer_type_id'
+DECLARE @keyCol3   varchar(128) = 'CurrentStatusCode'
 DECLARE @keyCol4   varchar(128) = ''
 DECLARE @keyCol5   varchar(128) = ''
 DECLARE @keyCol6   varchar(128) = ''
@@ -29,9 +29,9 @@ DECLARE @keyCol7   varchar(128) = ''
 DECLARE @keyCol8   varchar(128) = ''
 DECLARE @keyCol9   varchar(128) = ''
 
-DECLARE @incCol1   varchar(128) = 'Id'     -- included columns
-DECLARE @incCol2   varchar(128) = 'VisitNoHB'
-DECLARE @incCol3   varchar(128) = ''
+DECLARE @incCol1   varchar(128) = 'amount'     -- included columns
+DECLARE @incCol2   varchar(128) = 'destination_account_id'
+DECLARE @incCol3   varchar(128) = 'CurrentStatusActiveFromDate'
 DECLARE @incCol4   varchar(128) = ''
 DECLARE @incCol5   varchar(128) = ''
 DECLARE @incCol6   varchar(128) = ''
@@ -174,7 +174,7 @@ SELECT @variableLengthStorageFullnessOfKeyColumns AS variableLengthStorageFullne
 
 /* Step 1. Calculate Variables for Use in Steps 2 and 3 */
 DECLARE @Num_Rows int
-DECLARE @sql nvarchar(max) = 'SELECT @Num_Rows = SUM(st.row_count) FROM sys.dm_db_partition_stats st WHERE object_name(object_id) =  ''' + @tableToIndex + ''' AND index_id < 2'
+DECLARE @sql nvarchar(max) = 'SELECT @Num_Rows = SUM(st.row_count) FROM sys.tables t JOIN sys.dm_db_partition_stats st ON t.object_id = st.object_id WHERE schema_name(t.schema_id) = ''' + @schema + ''' AND object_name(st.object_id) =  ''' + @table + ''' AND index_id < 2'
 EXECUTE sp_executesql @sql, N'@Num_Rows int OUTPUT', @Num_Rows = @Num_Rows OUTPUT
 
 DECLARE @Num_Key_Cols int = (SELECT COUNT(keyColumn) FROM @columnsToIndex)
