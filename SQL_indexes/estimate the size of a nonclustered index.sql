@@ -1,8 +1,8 @@
 /*
-estimate the size of a nonclustered index v.3.2
+estimate the size of a nonclustered index v.3.3
 https://docs.microsoft.com/en-us/sql/relational-databases/databases/estimate-the-size-of-a-nonclustered-index?view=sql-server-2016
 Valmar Moritz
-Dec 25th, 2019
+Dec 26th, 2019
 */
 
 SET NOCOUNT ON
@@ -12,7 +12,7 @@ GO
 
 /* MANUAL INPUTS */
 
-USE []    -- database name
+USE [...]    -- database name
 
 DECLARE @schema varchar(128) = 'dbo'     -- schema name
 DECLARE @table  varchar(128) = ''     -- table name
@@ -186,7 +186,7 @@ DECLARE @Num_Variable_Key_Cols int
 DECLARE @Max_Var_Key_Size int
 
 SELECT @Num_Variable_Key_Cols = COUNT(*)
-	,@Max_Var_Key_Size = SUM([Max Byte Length])
+	,@Max_Var_Key_Size = ISNULL(SUM([Max Byte Length]), 0)
 FROM @columnsToIndex
 WHERE isVariableLength = 1
 
